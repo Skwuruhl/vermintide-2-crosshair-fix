@@ -53,7 +53,6 @@ mod:hook_origin(CrosshairUI, "update_spread", function (self, dt, equipment)
 end)
 
 mod:hook_origin(CrosshairUI, "draw_default_style_crosshair", function (self, ui_renderer, pitch_percentage, yaw_percentage)
-	UIRenderer.draw_widget(ui_renderer, self.crosshair_dot)
 	local camera_manager = Managers.state.camera
 	local fieldOfView = (camera_manager:has_viewport("player_1") and camera_manager:fov("player_1")) or 1
 
@@ -70,10 +69,10 @@ mod:hook_origin(CrosshairUI, "draw_default_style_crosshair", function (self, ui_
 		self:_set_widget_point_offset(self.crosshair_line, i, num_points, pitch_percentage, yaw_percentage, start_degrees, pitch_offset, yaw_offset)
 		UIRenderer.draw_widget(ui_renderer, self.crosshair_line)
 	end
+	UIRenderer.draw_widget(ui_renderer, self.crosshair_dot)
 end)
 
 mod:hook_origin(CrosshairUI, "draw_arrows_style_crosshair", function (self, ui_renderer, pitch_percentage, yaw_percentage)
-	UIRenderer.draw_widget(ui_renderer, self.crosshair_dot)
 	local camera_manager = Managers.state.camera
 	local fieldOfView = (camera_manager:has_viewport("player_1") and camera_manager:fov("player_1")) or 1
 
@@ -90,10 +89,10 @@ mod:hook_origin(CrosshairUI, "draw_arrows_style_crosshair", function (self, ui_r
 		self:_set_widget_point_offset(self.crosshair_arrow, i, num_points, pitch_percentage, yaw_percentage, start_degrees, pitch_offset, yaw_offset)
 		UIRenderer.draw_widget(ui_renderer, self.crosshair_arrow)
 	end
+	UIRenderer.draw_widget(ui_renderer, self.crosshair_dot)
 end)
 
 mod:hook_origin(CrosshairUI, "draw_shotgun_style_crosshair", function (self, ui_renderer, pitch_percentage, yaw_percentage)
-	UIRenderer.draw_widget(ui_renderer, self.crosshair_dot)
 	local camera_manager = Managers.state.camera
 	local fieldOfView = (camera_manager:has_viewport("player_1") and camera_manager:fov("player_1")) or 1
 
@@ -110,11 +109,10 @@ mod:hook_origin(CrosshairUI, "draw_shotgun_style_crosshair", function (self, ui_
 		self:_set_widget_point_offset(self.crosshair_shotgun, i, num_points, pitch_percentage, yaw_percentage, start_degrees, pitch_offset, yaw_offset)
 		UIRenderer.draw_widget(ui_renderer, self.crosshair_shotgun)
 	end
+	UIRenderer.draw_widget(ui_renderer, self.crosshair_dot)
 end)
 
 mod:hook_origin(CrosshairUI, "draw_projectile_style_crosshair", function (self, ui_renderer, pitch_percentage, yaw_percentage)
-	UIRenderer.draw_widget(ui_renderer, self.crosshair_dot)
-	UIRenderer.draw_widget(ui_renderer, self.crosshair_projectile)
 	local camera_manager = Managers.state.camera
 	local fieldOfView = (camera_manager:has_viewport("player_1") and camera_manager:fov("player_1")) or 1
 
@@ -131,6 +129,8 @@ mod:hook_origin(CrosshairUI, "draw_projectile_style_crosshair", function (self, 
 		self:_set_widget_point_offset(self.crosshair_line, i, num_points, pitch_percentage, yaw_percentage, start_degrees, pitch_offset, yaw_offset)
 		UIRenderer.draw_widget(ui_renderer, self.crosshair_line)
 	end
+	UIRenderer.draw_widget(ui_renderer, self.crosshair_dot)
+	UIRenderer.draw_widget(ui_renderer, self.crosshair_projectile)
 end)
 
 mod:hook_origin(CrosshairUI, "_get_point_offset", function (self, point_index, max_points, pitch_percentage, yaw_percentage, start_degrees)
