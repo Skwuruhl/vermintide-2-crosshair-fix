@@ -1,0 +1,11 @@
+mod = [
+	"crosshairs"
+]
+
+package = [
+	"resource_packages/crosshairs/crosshairs"
+]
+
+lua = [
+	"scripts/mods/crosshairs/*"
+]
