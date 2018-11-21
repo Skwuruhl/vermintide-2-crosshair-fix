@@ -53,7 +53,8 @@ end)
 
 mod:hook_origin(CrosshairUI, "draw_default_style_crosshair", function (self, ui_renderer, pitch, yaw)
 	local camera_manager = Managers.state.camera
-	local fieldOfView = (camera_manager:has_viewport("player_1") and camera_manager:fov("player_1")) or 1--needed to call current field of view (important that it's current and not just configured FOV)
+	local viewport_name = Managers.player:local_player().viewport_name
+	local fieldOfView = (camera_manager:has_viewport(viewport_name) and camera_manager:fov(viewport_name)) or 1 --needed to call current field of view (important that it's current and not just configured FOV)
 
 	local num_points = 4
 	local start_degrees = 45
@@ -73,7 +74,8 @@ end)
 
 mod:hook_origin(CrosshairUI, "draw_arrows_style_crosshair", function (self, ui_renderer, pitch, yaw)
 	local camera_manager = Managers.state.camera
-	local fieldOfView = (camera_manager:has_viewport("player_1") and camera_manager:fov("player_1")) or 1
+	local viewport_name = Managers.player:local_player().viewport_name
+	local fieldOfView = (camera_manager:has_viewport(viewport_name) and camera_manager:fov(viewport_name)) or 1
 
 	local num_points = 4
 	local start_degrees = 45
@@ -93,7 +95,8 @@ end)
 
 mod:hook_origin(CrosshairUI, "draw_shotgun_style_crosshair", function (self, ui_renderer, pitch, yaw)
 	local camera_manager = Managers.state.camera
-	local fieldOfView = (camera_manager:has_viewport("player_1") and camera_manager:fov("player_1")) or 1
+	local viewport_name = Managers.player:local_player().viewport_name
+	local fieldOfView = (camera_manager:has_viewport(viewport_name) and camera_manager:fov(viewport_name)) or 1
 
 	local num_points = 4
 	local start_degrees = 45
@@ -113,7 +116,8 @@ end)
 
 mod:hook_origin(CrosshairUI, "draw_projectile_style_crosshair", function (self, ui_renderer, pitch, yaw)
 	local camera_manager = Managers.state.camera
-	local fieldOfView = (camera_manager:has_viewport("player_1") and camera_manager:fov("player_1")) or 1
+	local viewport_name = Managers.player:local_player().viewport_name
+	local fieldOfView = (camera_manager:has_viewport(viewport_name) and camera_manager:fov(viewport_name)) or 1
 
 	local num_points = 2
 	local start_degrees = 0
@@ -149,6 +153,11 @@ mod:hook_origin(CrosshairUI, "_get_point_offset", function (self, point_index, m
 
 	return ptx, pty, angle
 end)
+
+--
+--Unable to make the circle crosshair scale since it's just a static image with no input variables (that I know of)
+--
+
 
 --[[
 	Callbacks
