@@ -27,6 +27,8 @@ local definitions = local_require("scripts/ui/views/crosshair_ui_definitions")
 --mod:hook_safe(SomeObject, "some_function", my_function)
 
 -- If you want to do something more involved\
+
+--changed function to use raw pitch and yaw instead of x_percentage
 mod:hook_origin(CrosshairUI, "update_spread", function (self, dt, equipment)
 	local wielded_item_data = equipment.wielded
 	local item_template = BackendUtils.get_item_template(wielded_item_data)
@@ -42,37 +44,34 @@ mod:hook_origin(CrosshairUI, "update_spread", function (self, dt, equipment)
 		end
 	end
 
-	local maximum_pitch = SpreadTemplates.maximum_pitch
-	local maximum_yaw = SpreadTemplates.maximum_yaw
-	local pitch_percentage = pitch
-	local yaw_percentage = yaw
-	local pitch_offset = math.lerp(0, definitions.max_spread_pitch, pitch_percentage)
-	local yaw_offset = math.lerp(0, definitions.max_spread_yaw, yaw_percentage)
-
-	self:draw(dt, pitch_percentage, yaw_percentage)
+	self:draw(dt, pitch, yaw)
 end)
 
-mod:hook_origin(CrosshairUI, "draw_default_style_crosshair", function (self, ui_renderer, pitch_percentage, yaw_percentage)
+--for the draw_x_style_crosshair functions I had to move the calculations of pitch_radius and yaw_radius from _get_point_offset into the draw_x_style_crosshair so that I could account for each crosshair type's different sizes without changing the inputs of the _get_point_offset function
+--I also set all pitch/yaw_offsets to 0 as it's broken and I'm accounting for crosshair size using " + definitions.scenegraph_definition.crosshair_x.size[1]/2" instead.
+--I also moved "UIRenderer.draw_widget(ui_renderer, self.crosshair_dot)" to draw last as that ensures it's on top of crosshairs instead of under them for 0 spread.
+
+mod:hook_origin(CrosshairUI, "draw_default_style_crosshair", function (self, ui_renderer, pitch, yaw)
 	local camera_manager = Managers.state.camera
-	local fieldOfView = (camera_manager:has_viewport("player_1") and camera_manager:fov("player_1")) or 1
+	local fieldOfView = (camera_manager:has_viewport("player_1") and camera_manager:fov("player_1")) or 1--needed to call current field of view (important that it's current and not just configured FOV)
 
 	local num_points = 4
 	local start_degrees = 45
-	local pitch_offset = 0
-	local yaw_offset = 0
-	--pitch_percentage = math.max(0.0001, pitch_percentage)
-	--yaw_percentage = math.max(0.0001, yaw_percentage)
-	pitch_percentage = 1080 * math.tan(math.rad(pitch_percentage)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_line.size[1]/2
-	yaw_percentage = 1080 * math.tan(math.rad(yaw_percentage)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_line.size[1]/2
+	local pitch_offset = 0 -- 0 on all spreads since it's broken
+	local yaw_offset = 0 -- offset is added manually in x_radius line
+	pitch = math.max(0, pitch)--changed from min of 0.0001 to 0 since my offset in the next lines puts it above 0 anyway. Will only ever break if Fatshark make a crosshair have a length of 0 pixels.
+	yaw = math.max(0, yaw)
+	local pitch_radius = 1080 * math.tan(math.rad(pitch)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_line.size[1]/2 --1  radius is equal to 1 pixel on a 1080p monitor and gets scaled for resolution, e.g. a 4k monitor would have 2 pixels per 1 radius.
+	local yaw_radius = 1080 * math.tan(math.rad(yaw)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_line.size[1]/2--1080 * tan(spread/2)/tan(vertical fov/2) + half crosshair length
 
 	for i = 1, num_points, 1 do
-		self:_set_widget_point_offset(self.crosshair_line, i, num_points, pitch_percentage, yaw_percentage, start_degrees, pitch_offset, yaw_offset)
+		self:_set_widget_point_offset(self.crosshair_line, i, num_points, pitch_radius, yaw_radius, start_degrees, pitch_offset, yaw_offset)
 		UIRenderer.draw_widget(ui_renderer, self.crosshair_line)
 	end
-	UIRenderer.draw_widget(ui_renderer, self.crosshair_dot)
+	UIRenderer.draw_widget(ui_renderer, self.crosshair_dot)--moved to the bottom from top of function
 end)
 
-mod:hook_origin(CrosshairUI, "draw_arrows_style_crosshair", function (self, ui_renderer, pitch_percentage, yaw_percentage)
+mod:hook_origin(CrosshairUI, "draw_arrows_style_crosshair", function (self, ui_renderer, pitch, yaw)
 	local camera_manager = Managers.state.camera
 	local fieldOfView = (camera_manager:has_viewport("player_1") and camera_manager:fov("player_1")) or 1
 
@@ -80,19 +79,19 @@ mod:hook_origin(CrosshairUI, "draw_arrows_style_crosshair", function (self, ui_r
 	local start_degrees = 45
 	local pitch_offset = 0
 	local yaw_offset = 0
-	--pitch_percentage = math.max(0.0001, pitch_percentage)
-	--yaw_percentage = math.max(0.0001, yaw_percentage)
-	pitch_percentage = 1080 * math.tan(math.rad(pitch_percentage)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_arrow.size[1]/2
-	yaw_percentage = 1080 * math.tan(math.rad(yaw_percentage)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_arrow.size[1]/2
+	pitch = math.max(0, pitch)
+	yaw = math.max(0, yaw)
+	local pitch_radius = 1080 * math.tan(math.rad(pitch)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_arrow.size[1]/2
+	local yaw_radius = 1080 * math.tan(math.rad(yaw)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_arrow.size[1]/2
 
 	for i = 1, num_points, 1 do
-		self:_set_widget_point_offset(self.crosshair_arrow, i, num_points, pitch_percentage, yaw_percentage, start_degrees, pitch_offset, yaw_offset)
+		self:_set_widget_point_offset(self.crosshair_arrow, i, num_points, pitch_radius, yaw_radius, start_degrees, pitch_offset, yaw_offset)
 		UIRenderer.draw_widget(ui_renderer, self.crosshair_arrow)
 	end
 	UIRenderer.draw_widget(ui_renderer, self.crosshair_dot)
 end)
 
-mod:hook_origin(CrosshairUI, "draw_shotgun_style_crosshair", function (self, ui_renderer, pitch_percentage, yaw_percentage)
+mod:hook_origin(CrosshairUI, "draw_shotgun_style_crosshair", function (self, ui_renderer, pitch, yaw)
 	local camera_manager = Managers.state.camera
 	local fieldOfView = (camera_manager:has_viewport("player_1") and camera_manager:fov("player_1")) or 1
 
@@ -100,19 +99,19 @@ mod:hook_origin(CrosshairUI, "draw_shotgun_style_crosshair", function (self, ui_
 	local start_degrees = 45
 	local pitch_offset = 0
 	local yaw_offset = 0
-	--pitch_percentage = math.max(0.0001, pitch_percentage)
-	--yaw_percentage = math.max(0.0001, yaw_percentage)
-	pitch_percentage = 1080 * math.tan(math.rad(pitch_percentage)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_shotgun.size[1]/2
-	yaw_percentage = 1080 * math.tan(math.rad(yaw_percentage)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_shotgun.size[1]/2
+	pitch = math.max(0, pitch)
+	yaw = math.max(0, yaw)
+	local pitch_radius = 1080 * math.tan(math.rad(pitch)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_shotgun.size[1]/2
+	local yaw_radius = 1080 * math.tan(math.rad(yaw)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_shotgun.size[1]/2
 
 	for i = 1, num_points, 1 do
-		self:_set_widget_point_offset(self.crosshair_shotgun, i, num_points, pitch_percentage, yaw_percentage, start_degrees, pitch_offset, yaw_offset)
+		self:_set_widget_point_offset(self.crosshair_shotgun, i, num_points, pitch_radius, yaw_radius, start_degrees, pitch_offset, yaw_offset)
 		UIRenderer.draw_widget(ui_renderer, self.crosshair_shotgun)
 	end
 	UIRenderer.draw_widget(ui_renderer, self.crosshair_dot)
 end)
 
-mod:hook_origin(CrosshairUI, "draw_projectile_style_crosshair", function (self, ui_renderer, pitch_percentage, yaw_percentage)
+mod:hook_origin(CrosshairUI, "draw_projectile_style_crosshair", function (self, ui_renderer, pitch, yaw)
 	local camera_manager = Managers.state.camera
 	local fieldOfView = (camera_manager:has_viewport("player_1") and camera_manager:fov("player_1")) or 1
 
@@ -120,20 +119,23 @@ mod:hook_origin(CrosshairUI, "draw_projectile_style_crosshair", function (self, 
 	local start_degrees = 0
 	local pitch_offset = 0
 	local yaw_offset = 0
-	--pitch_percentage = math.max(0.0001, pitch_percentage)
-	--yaw_percentage = math.max(0.0001, yaw_percentage)
-	pitch_percentage = 1080 * math.tan(math.rad(pitch_percentage)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_line.size[1]/2
-	yaw_percentage = 1080 * math.tan(math.rad(yaw_percentage)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_line.size[1]/2
+	pitch = math.max(0.0001, pitch)
+	yaw = math.max(0.0001, yaw)
+	local pitch_radius = 1080 * math.tan(math.rad(pitch)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_line.size[1]/2
+	local yaw_radius = 1080 * math.tan(math.rad(yaw)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_line.size[1]/2
 
 	for i = 1, num_points, 1 do
-		self:_set_widget_point_offset(self.crosshair_line, i, num_points, pitch_percentage, yaw_percentage, start_degrees, pitch_offset, yaw_offset)
+		self:_set_widget_point_offset(self.crosshair_line, i, num_points, pitch_radius, yaw_radius, start_degrees, pitch_offset, yaw_offset)
 		UIRenderer.draw_widget(ui_renderer, self.crosshair_line)
 	end
 	UIRenderer.draw_widget(ui_renderer, self.crosshair_dot)
-	UIRenderer.draw_widget(ui_renderer, self.crosshair_projectile)
+	UIRenderer.draw_widget(ui_renderer, self.crosshair_projectile) --also moved to bottom just because
 end)
 
-mod:hook_origin(CrosshairUI, "_get_point_offset", function (self, point_index, max_points, pitch_percentage, yaw_percentage, start_degrees)
+
+--removed max_radius as it was used in calculating radius which is already done. It was also 228 pixels instead of 1080 pixels which is just not useful.
+--obviously also removed calculation of pitch/yaw_radius
+mod:hook_origin(CrosshairUI, "_get_point_offset", function (self, point_index, max_points, pitch_radius, yaw_radius, start_degrees)
 	local x = 0
 	local y = 0
 	local start_progress = ((start_degrees or 0) / 360) % 1
@@ -142,8 +144,8 @@ mod:hook_origin(CrosshairUI, "_get_point_offset", function (self, point_index, m
 	local rotation_progress = (start_progress + fraction) % 1
 	local degress = rotation_progress * 360
 	local angle = -((degress * math.pi) / 180)
-	local pty = y + pitch_percentage * math.sin(angle)
-	local ptx = x + yaw_percentage * math.cos(angle)
+	local pty = y + pitch_radius * math.sin(angle)
+	local ptx = x + yaw_radius * math.cos(angle)
 
 	return ptx, pty, angle
 end)
