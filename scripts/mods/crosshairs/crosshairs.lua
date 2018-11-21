@@ -54,7 +54,7 @@ end)
 mod:hook_origin(CrosshairUI, "draw_default_style_crosshair", function (self, ui_renderer, pitch, yaw)
 	local camera_manager = Managers.state.camera
 	local viewport_name = Managers.player:local_player().viewport_name
-	local fieldOfView = (camera_manager:has_viewport(viewport_name) and camera_manager:fov(viewport_name)) or 1 --needed to call current field of view (important that it's current and not just configured FOV)
+	local fieldOfView = (camera_manager:has_viewport(viewport_name) and camera_manager:fov(viewport_name)) or 1 --needed to call current field of view (important that it's current and not just configured FOV). This is used to adjust crosshairs based on the player's FOV.
 
 	local num_points = 4
 	local start_degrees = 45
@@ -63,7 +63,7 @@ mod:hook_origin(CrosshairUI, "draw_default_style_crosshair", function (self, ui_
 	pitch = math.max(0, pitch)--changed from min of 0.0001 to 0 since my offset in the next lines puts it above 0 anyway. Will only ever break if Fatshark make a crosshair have a length of 0 pixels.
 	yaw = math.max(0, yaw)
 	local pitch_radius = 1080 * math.tan(math.rad(pitch)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_line.size[1]/2 --1  radius is equal to 1 pixel on a 1080p monitor and gets scaled for resolution, e.g. a 4k monitor would have 2 pixels per 1 radius.
-	local yaw_radius = 1080 * math.tan(math.rad(yaw)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_line.size[1]/2--1080 * tan(spread/2)/tan(vertical fov/2) + half crosshair length
+	local yaw_radius = 1080 * math.tan(math.rad(yaw)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_line.size[1]/2--1080 * tan(spread/2)/tan(vertical fov/2) + half crosshair length. This makes the crosshairs spread with the tangent of spread instead of linearly.
 
 	for i = 1, num_points, 1 do
 		self:_set_widget_point_offset(self.crosshair_line, i, num_points, pitch_radius, yaw_radius, start_degrees, pitch_offset, yaw_offset)
