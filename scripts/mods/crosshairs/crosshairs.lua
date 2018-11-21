@@ -60,8 +60,8 @@ mod:hook_origin(CrosshairUI, "draw_default_style_crosshair", function (self, ui_
 	local start_degrees = 45
 	local pitch_offset = 0
 	local yaw_offset = 0
-	pitch_percentage = math.max(0.0001, pitch_percentage)
-	yaw_percentage = math.max(0.0001, yaw_percentage)
+	--pitch_percentage = math.max(0.0001, pitch_percentage)
+	--yaw_percentage = math.max(0.0001, yaw_percentage)
 	pitch_percentage = 1080 * math.tan(math.rad(pitch_percentage)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_line.size[1]/2
 	yaw_percentage = 1080 * math.tan(math.rad(yaw_percentage)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_line.size[1]/2
 
@@ -80,8 +80,8 @@ mod:hook_origin(CrosshairUI, "draw_arrows_style_crosshair", function (self, ui_r
 	local start_degrees = 45
 	local pitch_offset = 0
 	local yaw_offset = 0
-	pitch_percentage = math.max(0.0001, pitch_percentage)
-	yaw_percentage = math.max(0.0001, yaw_percentage)
+	--pitch_percentage = math.max(0.0001, pitch_percentage)
+	--yaw_percentage = math.max(0.0001, yaw_percentage)
 	pitch_percentage = 1080 * math.tan(math.rad(pitch_percentage)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_arrow.size[1]/2
 	yaw_percentage = 1080 * math.tan(math.rad(yaw_percentage)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_arrow.size[1]/2
 
@@ -100,8 +100,8 @@ mod:hook_origin(CrosshairUI, "draw_shotgun_style_crosshair", function (self, ui_
 	local start_degrees = 45
 	local pitch_offset = 0
 	local yaw_offset = 0
-	pitch_percentage = math.max(0.0001, pitch_percentage)
-	yaw_percentage = math.max(0.0001, yaw_percentage)
+	--pitch_percentage = math.max(0.0001, pitch_percentage)
+	--yaw_percentage = math.max(0.0001, yaw_percentage)
 	pitch_percentage = 1080 * math.tan(math.rad(pitch_percentage)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_shotgun.size[1]/2
 	yaw_percentage = 1080 * math.tan(math.rad(yaw_percentage)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_shotgun.size[1]/2
 
@@ -120,8 +120,8 @@ mod:hook_origin(CrosshairUI, "draw_projectile_style_crosshair", function (self, 
 	local start_degrees = 0
 	local pitch_offset = 0
 	local yaw_offset = 0
-	pitch_percentage = math.max(0.0001, pitch_percentage)
-	yaw_percentage = math.max(0.0001, yaw_percentage)
+	--pitch_percentage = math.max(0.0001, pitch_percentage)
+	--yaw_percentage = math.max(0.0001, yaw_percentage)
 	pitch_percentage = 1080 * math.tan(math.rad(pitch_percentage)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_line.size[1]/2
 	yaw_percentage = 1080 * math.tan(math.rad(yaw_percentage)/2)/math.tan(fieldOfView/2) + definitions.scenegraph_definition.crosshair_line.size[1]/2
 
