@@ -146,40 +146,40 @@ end)
 
 -- Called on every update to mods
 -- dt - time in milliseconds since last update
-mod.update = function(dt)
+--[[ mod.update = function(dt)
 	
-end
+end ]]
 
 -- Called when all mods are being unloaded
 -- exit_game - if true, game will close after unloading
-mod.on_unload = function(exit_game)
+--[[ mod.on_unload = function(exit_game)
 	
-end
+end ]]
 
 -- Called when game state changes (e.g. StateLoading -> StateIngame)
 -- status - "enter" or "exit"
 -- state  - "StateLoading", "StateIngame" etc.
-mod.on_game_state_changed = function(status, state)
+--[[ mod.on_game_state_changed = function(status, state)
 	
-end
+end ]]
 
 -- Called when a setting is changed in mod settings
 -- Use mod:get(setting_name) to get the changed value
-mod.on_setting_changed = function(setting_name)
+--[[ mod.on_setting_changed = function(setting_name)
 	
-end
+end ]]
 
 -- Called when the checkbox for this mod is unchecked
 -- is_first_call - true if called right after mod initialization
-mod.on_disabled = function(is_first_call)
+--[[ mod.on_disabled = function(is_first_call)
 
-end
+end ]]
 
 -- Called when the checkbox for this is checked
 -- is_first_call - true if called right after mod initialization
-mod.on_enabled = function(is_first_call)
+--[[ mod.on_enabled = function(is_first_call)
 
-end
+end ]]
 
 
 --[[
