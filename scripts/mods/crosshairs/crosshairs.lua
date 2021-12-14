@@ -1,5 +1,6 @@
 local mod = get_mod("crosshairs")
 local definitions = local_require("scripts/ui/views/crosshair_ui_definitions")
+local hud_scale = 1.0
 
 -- changed function to use raw pitch and yaw instead of x_percentage, which was just pitch/yaw divided by 15.
 -- also removed an unused offset variable?
@@ -93,6 +94,8 @@ mod:hook_origin(CrosshairUI, "_get_point_offset", function (self, point_index, m
 
 	local pty = 1080.0 * math.tan(math.rad(pitch)/2)/math.tan(fieldOfView/2) + crosshair_size/2.0-- 1 is equal to 1 pixel on a 1080p monitor and gets scaled for resolution, e.g. a 2160p (4k) monitor would have 2 pixels per 1 radius.
 	local ptx = 1080.0 * math.tan(math.rad(yaw)/2)/math.tan(fieldOfView/2) + crosshair_size/2.0-- 1080 * tan(spread/2)/tan(vertical fov/2) + half crosshair length. This makes the crosshairs scale with the tangent of spread instead of linearly. Plus halved crosshair_size since crosshair coordinates set their center.
+	pty = pty / hud_scale
+	ptx = ptx / hud_scale
 	local start_progress = ((start_degrees or 0) / 360) % 1
 	local real_index = point_index - 1
 	local fraction = real_index / max_points
@@ -104,6 +107,10 @@ mod:hook_origin(CrosshairUI, "_get_point_offset", function (self, point_index, m
 
 	return ptx, pty, angle
 end)
+
+mod.on_game_state_changed = function(status, state)
+	hud_scale = Application.user_setting("hud_scale")
+end
 
 --
 --Unable to make the circle crosshair scale since it's just a static image with no input variables (that I know of)
