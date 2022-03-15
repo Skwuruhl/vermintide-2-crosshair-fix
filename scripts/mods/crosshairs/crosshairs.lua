@@ -3,22 +3,27 @@ local definitions = local_require("scripts/ui/views/crosshair_ui_definitions")
 
 -- changed function to use raw pitch and yaw instead of x_percentage, which was just pitch/yaw divided by 15.
 -- also removed an unused offset variable?
-mod:hook_origin(CrosshairUI, "update_spread", function (self, dt, equipment)
+mod:hook_origin(CrosshairUI, "update_spread", function (self, dt, t, equipment)
+	Profiler.start("update_spread")
 	local wielded_item_data = equipment.wielded
-	local item_template = BackendUtils.get_item_template(wielded_item_data)
-	local pitch = 0
-	local yaw = 0
+	local item_template = BackendUtils.get_item_template( wielded_item_data )
+	local pitch, yaw = 0, 0
 
 	if item_template.default_spread_template then
 		local weapon_unit = equipment.right_hand_wielded_unit or equipment.left_hand_wielded_unit
 
-		if weapon_unit and ScriptUnit.has_extension(weapon_unit, "spread_system") then
-			local spread_extension = ScriptUnit.extension(weapon_unit, "spread_system")
-			pitch, yaw = spread_extension:get_current_pitch_and_yaw()
+		if weapon_unit then
+			if ScriptUnit.has_extension( weapon_unit, "spread_system" ) then
+				local spread_extension = ScriptUnit.extension(weapon_unit, "spread_system")
+
+				pitch, yaw = spread_extension:get_current_pitch_and_yaw()
+			end
 		end
 	end
 
-	self:draw(dt, pitch, yaw)
+	Profiler.stop("update_spread")
+
+	self:draw(dt, t, pitch, yaw)
 end)
 
 -- I removed all pitch/yaw_offsets as it's broken and I'm accounting for crosshair size using the crosshair_size variable instead.
@@ -29,11 +34,11 @@ mod:hook_origin(CrosshairUI, "draw_default_style_crosshair", function (self, ui_
 	local start_degrees = 45
 	local crosshair_size = definitions.scenegraph_definition.crosshair_line.size[1]-- used instead of pitch/yaw_offset.
 
-	for i = 1, num_points, 1 do
+	for i = 1, num_points do
 		self:_set_widget_point_offset(self.crosshair_line, i, num_points, pitch, yaw, start_degrees, crosshair_size)-- changed to pass just crosshair_size instead of offsets
 		UIRenderer.draw_widget(ui_renderer, self.crosshair_line)
 	end
-	UIRenderer.draw_widget(ui_renderer, self.crosshair_dot)-- moved to the bottom from top of function
+	UIRenderer.draw_widget(ui_renderer, self.crosshair_dot)-- moved to the bottom from top of function so that dot is drawn on top of lines.
 end)
 
 mod:hook_origin(CrosshairUI, "draw_arrows_style_crosshair", function (self, ui_renderer, pitch, yaw)
@@ -41,7 +46,7 @@ mod:hook_origin(CrosshairUI, "draw_arrows_style_crosshair", function (self, ui_r
 	local start_degrees = 45
 	local crosshair_size = definitions.scenegraph_definition.crosshair_arrow.size[1]
 
-	for i = 1, num_points, 1 do
+	for i = 1, num_points do
 		self:_set_widget_point_offset(self.crosshair_arrow, i, num_points, pitch, yaw, start_degrees, crosshair_size)
 		UIRenderer.draw_widget(ui_renderer, self.crosshair_arrow)
 	end
@@ -53,7 +58,7 @@ mod:hook_origin(CrosshairUI, "draw_shotgun_style_crosshair", function (self, ui_
 	local start_degrees = 45
 	local crosshair_size = definitions.scenegraph_definition.crosshair_shotgun.size[1]
 
-	for i = 1, num_points, 1 do
+	for i = 1, num_points do
 		self:_set_widget_point_offset(self.crosshair_shotgun, i, num_points, pitch, yaw, start_degrees, crosshair_size)
 		UIRenderer.draw_widget(ui_renderer, self.crosshair_shotgun)
 	end
@@ -65,7 +70,7 @@ mod:hook_origin(CrosshairUI, "draw_projectile_style_crosshair", function (self, 
 	local start_degrees = 0
 	local crosshair_size = definitions.scenegraph_definition.crosshair_line.size[1]
 
-	for i = 1, num_points, 1 do
+	for i = 1, num_points do
 		self:_set_widget_point_offset(self.crosshair_line, i, num_points, pitch, yaw, start_degrees, crosshair_size)
 		UIRenderer.draw_widget(ui_renderer, self.crosshair_line)
 	end
