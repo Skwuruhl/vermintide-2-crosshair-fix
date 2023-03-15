@@ -95,8 +95,8 @@ mod:hook_origin(CrosshairUI, "_get_point_offset", function (self, point_index, m
 	local camera_manager = Managers.state.camera
 	local viewport_name = Managers.player:local_player().viewport_name
 	local fieldOfView = (camera_manager:has_viewport(viewport_name) and camera_manager:fov(viewport_name)) or 1-- needed to calculate crosshair spread based on current FOV.
-	local pty = 1080 * math.tan(math.rad(pitch)/2)/math.tan(fieldOfView/2) + crosshair_size/2.0-- 1 is equal to 1 pixel on a 1080p monitor and gets scaled for resolution, e.g. a 2160p (4k) monitor would have 2 pixels per 1 radius.
-	local ptx = 1080 * math.tan(math.rad(yaw)/2)/math.tan(fieldOfView/2) + crosshair_size/2.0-- 1080 * tan(spread/2)/tan(vertical fov/2) + half crosshair length. This makes the crosshairs scale with the tangent of spread instead of linearly. Plus halved crosshair_size since crosshair coordinates set their center.
+	local pty = 540 * math.tan(math.rad(pitch))/math.tan(fieldOfView/2) + crosshair_size/2.0-- 1 is equal to 1 pixel on a 1080p monitor and gets scaled for resolution, e.g. a 2160p (4k) monitor would have 2 pixels per 1 radius.
+	local ptx = 540 * math.tan(math.rad(yaw))/math.tan(fieldOfView/2) + crosshair_size/2.0-- 1080 * tan(spread/2)/tan(vertical fov/2) + half crosshair length. This makes the crosshairs scale with the tangent of spread instead of linearly. Plus halved crosshair_size since crosshair coordinates set their center.
 	local hud_scale = RESOLUTION_LOOKUP.scale * 1080 / RESOLUTION_LOOKUP.res_h
 	pty = pty / hud_scale
 	ptx = ptx / hud_scale
